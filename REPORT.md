@@ -59,6 +59,11 @@ linear baseline, fixed across every representation.
 | Coulomb full | 841 | 0.658 ± 0.012 | 0.591 | 0.866 ± 0.007 | 0.427 |
 | Coulomb triu | 435 | 0.658 ± 0.011 | 0.592 | 0.866 ± 0.008 | 0.423 |
 | Coulomb eig | 29 | 0.809 ± 0.007 | 0.463 | 0.984 ± 0.012 | 0.291 |
+| Coulomb **image → CNN** | 29×29 | 0.718 ± 0.008 (Conv2d) | 0.547 | — | — |
+
+The CNN row treats the Coulomb matrix as a 1-channel 29×29 image (`model.py`
+`CoulombCNN`: two Conv2d+MaxPool blocks → FC), trained faithfully to the
+original recipe (L1 loss, Adam 1e-3, early stopping) under the same 5-fold folds.
 
 ## 4. Findings
 
@@ -78,6 +83,18 @@ that information loss outweighs any benefit of exact symmetry. **Conclusion:
 representational richness and locality — captured by SOAP's local atomic
 environments — drive accuracy, not invariance per se.** This directly refutes
 the intuitive "make it permutation-invariant and it will generalize" hypothesis.
+
+**(2b) The "molecule as image" CNN fails for the *right* reason.** Treating the
+Coulomb matrix as an image and running a Conv2d CNN gives MAE 0.718 — **worse
+than simply feeding the same matrix to gradient-boosted trees (0.658)**, so the
+convolutional inductive bias actively *hurts*. Conv2d assumes **spatial locality**
+(neighbouring pixels relate) and **translation invariance** (a pattern means the
+same anywhere); a Coulomb matrix has neither — its axes are atom indices, so
+adjacent entries are not physically adjacent and a sliding filter is meaningless.
+Yet the CNN still **beats** the permutation-invariant eigenspectrum (0.809):
+even a wrong inductive bias applied to the rich matrix outperforms a
+"correct-invariance" representation that discarded the geometry — reinforcing (1)
+and (2), that representational richness beats symmetry.
 
 **(3) Aggregation matters, and interacts with the model.** SOAP inner vs outer
 pooling: for XGBoost, inner (0.428) clearly beats outer (0.524); for the linear

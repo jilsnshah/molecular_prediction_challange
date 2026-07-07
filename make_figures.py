@@ -11,14 +11,17 @@ os.makedirs("figures", exist_ok=True)
 
 # Fig 1: MAE by representation x model (grouped bars, error bars = fold std)
 reps = ["soap-inner", "soap-outer", "full", "triu", "eig"]
-labels = ["SOAP\ninner", "SOAP\nouter", "Coulomb\nfull", "Coulomb\ntriu", "Coulomb\neig*"]
+labels = ["SOAP\ninner", "SOAP\nouter", "Coulomb\nfull", "Coulomb\ntriu", "Coulomb\neig*", "Coulomb\nimg-CNN"]
 x = np.arange(len(reps)); w = 0.38
-fig, ax = plt.subplots(figsize=(7.5, 4.2))
+fig, ax = plt.subplots(figsize=(8.2, 4.2))
 for i, (m, c) in enumerate([("xgboost", "#2b6cb0"), ("ridge", "#dd6b20")]):
     mae = [b[f"{r}/{m}"]["mae"] for r in reps]
     err = [b[f"{r}/{m}"]["mae_std"] for r in reps]
     ax.bar(x + (i-0.5)*w, mae, w, yerr=err, capsize=3, label=m, color=c)
-ax.set_xticks(x); ax.set_xticklabels(labels)
+cnn = b["coulomb-image/cnn"]
+ax.bar([len(reps)], [cnn["mae"]], w, yerr=[cnn["mae_std"]], capsize=3,
+       label="CNN (Conv2d)", color="#805ad5")
+ax.set_xticks(np.arange(len(labels))); ax.set_xticklabels(labels)
 ax.set_ylabel("MAE (Debye)  -- lower better")
 ax.set_title("Representation drives accuracy more than model\n5-fold CV, N=20,000  (*eig = provably permutation-invariant)")
 ax.legend(); ax.grid(axis="y", alpha=0.3)
