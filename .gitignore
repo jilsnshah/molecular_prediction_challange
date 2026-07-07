@@ -84,3 +84,9 @@ Desktop.ini
 *.bak
 *.swp
 *~
+
+# Generated caches and model weights (large, regenerable)
+data_cache/
+gnn_data/
+*.pth
+*.pt
