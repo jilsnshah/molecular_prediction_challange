@@ -1,6 +1,26 @@
-# Molecular Prediction Challenge
+# Molecular Dipole-Moment Prediction — A Controlled Representation-vs-Model Study
 
-Machine learning project for predicting molecular dipole moments using various approaches including SOAP descriptors with XGBoost, standard Neural Networks, and Graph Neural Networks (GNNs).
+Predicting molecular dipole moments from 3D structure, framed as a controlled
+experiment: **does the molecular representation or the learning model drive
+accuracy — and is permutation invariance actually what matters?**
+
+**Headline results** (5-fold CV, 20,000 molecules — see [`REPORT.md`](REPORT.md)):
+- **Representation beats model ~3×.** SOAP + XGBoost reaches **MAE 0.428 ± 0.005
+  (R² 0.81)**; swapping Coulomb → SOAP cuts error **35%** — larger than any model
+  change. Even *linear* regression on SOAP beats XGBoost on Coulomb.
+- **Permutation invariance is not the driver.** Enforcing exact invariance via
+  the Coulomb eigenspectrum *worsens* MAE by 0.15 (paired-t p = 2.3×10⁻⁵),
+  refuting the intuitive invariance hypothesis.
+- **Aggregation and molecule size** further modulate accuracy (see report).
+
+Full methodology, tables, figures, and significance tests are in
+[**`REPORT.md`**](REPORT.md). Reproduce with `research_benchmark.py`,
+`soap_benchmark.py`, `make_figures.py`.
+
+---
+
+The repo also implements standard Neural Networks and Graph Neural Networks
+(GNNs) as additional architectures explored during the study.
 
 ## Project Structure
 

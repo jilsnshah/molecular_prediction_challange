@@ -90,3 +90,6 @@ data_cache/
 gnn_data/
 *.pth
 *.pt
+
+# research virtualenv (regenerable)
+research_env/
